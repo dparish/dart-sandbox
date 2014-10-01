@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:unittest/unittest.dart';
 
 class PrimeSieve {
   int max;
@@ -18,9 +19,35 @@ class PrimeSieve {
     return primes;
   }
 
+  List<int> findPrimesDartLike() {
+
+    List<int> allNumbers = new Iterable.generate(this.max - 1, (i) => i + 2).toList();
+
+    List<int> foundPrimes = new List();
+
+    Stopwatch watch = new Stopwatch()..start();
+    print("generate took:" + watch.elapsed.toString());
+    while (!allNumbers.isEmpty) {
+      int prime = allNumbers.removeAt(0);
+      foundPrimes.add(prime);
+      allNumbers.removeWhere((i) => i % prime == 0);
+    }
+    return foundPrimes;
+  }
 }
 
 void main() {
-  PrimeSieve sieve = new PrimeSieve(5);
-  sieve.findPrimes().forEach((i) => print(i));
+  test("should equal", () {
+    PrimeSieve sieve = new PrimeSieve(20000);
+    Stopwatch stopwatch = new Stopwatch()..start();
+    int oldCount = sieve.findPrimes().length;
+    print(oldCount);
+    print("old one in:" + stopwatch.elapsed.toString());
+
+    stopwatch.reset();
+    int dartCount = sieve.findPrimesDartLike().length;
+    print(dartCount);
+    print("new one in:" + stopwatch.elapsed.toString());
+    expect(oldCount, equals(dartCount));
+  });
 }
